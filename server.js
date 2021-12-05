@@ -80,7 +80,24 @@ async function setWebhook() {
   }
 }
 
+async function setCommands() {
+  try {
+    const { body } = await got.post(URL + "setMyCommands", {
+      body: {
+        commands: [
+          { command: "rasgele", description: "rasgele kısımlar getirir" },
+        ],
+      },
+    });
+    const b = JSON.parse(body);
+    return b.result.url.length > 0;
+  } catch (err) {
+    console.log("Error: ", err);
+  }
+}
+
 setWebhook();
+setCommands();
 
 // app.use(express.static('public'));
 const PORT = process.env.PORT || 3000;
