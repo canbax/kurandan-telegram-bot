@@ -37,7 +37,7 @@ app.get("/", async (req, res) => {
 app.post("/tupdate", async (req, res) => {
   try {
     console.log(req);
-    res.write("Hiii");
+    res.write("received telegram update: ", req.body);
     res.end();
   } catch (err) {
     errResponseFn(err, res);
@@ -66,8 +66,12 @@ async function hasWebhook() {
 }
 
 async function setWebhook() {
+  const webhook = "https://kurandan.herokuapp.com/tupdate";
   try {
-    const { body } = await got(URL + "setWebhook?url=https://");
+    if (await hasWebhook()) {
+      return;
+    }
+    const { body } = await got(URL + "setWebhook?url=" + webhook);
     console.log(body);
     const b = JSON.parse(body);
     return b.result.url.length > 0;
@@ -76,12 +80,7 @@ async function setWebhook() {
   }
 }
 
-async function executer() {
-  const e = await hasWebhook();
-  console.log(e);
-}
-
-executer();
+setWebhook();
 
 // app.use(express.static('public'));
 const PORT = process.env.PORT || 3000;
