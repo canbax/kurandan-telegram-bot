@@ -36,7 +36,7 @@ app.get("/", async (req, res) => {
 // get echo
 app.post("/tupdate", async (req, res) => {
   try {
-    console.log(req);
+    console.log(req.body);
     res.write("received telegram update: ", req.body);
     res.end();
   } catch (err) {
