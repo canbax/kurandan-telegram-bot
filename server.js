@@ -82,15 +82,13 @@ async function setWebhook() {
 
 async function setCommands() {
   try {
-    const { body } = await got.post(URL + "setMyCommands", {
-      body: {
-        commands: [
-          { command: "rasgele", description: "rasgele kısımlar getirir" },
-        ],
-      },
+    const b = JSON.stringify({
+      commands: [
+        { command: "rasgele", description: "rasgele kısımlar getirir" },
+      ],
     });
-    const b = JSON.parse(body);
-    return b.result.url.length > 0;
+    const { body } = await got.post(URL + "setMyCommands", { body: b });
+    console.log(body);
   } catch (err) {
     console.log("Error: ", err);
   }
