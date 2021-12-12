@@ -68,8 +68,8 @@ async function processInput(txt, chatId) {
 
 async function getRandomFragments() {
   const surahId = hp.getRandomInt(1, 114);
-  const verseCount = staticData.surah2verseCount[surahId];
-  let verseId = hp.getRandomInt(1, verseCount);
+  const totalVerseCount = staticData.surah2verseCount[surahId];
+  let verseId = hp.getRandomInt(1, totalVerseCount);
   const randomAuthorIdx = hp.getRandomInt(0, staticData.authorIds.length - 1);
   const authorId = staticData.authorIds[randomAuthorIdx];
   let { txt, footnotes } = await getVerseAndFootnotes(
@@ -81,7 +81,7 @@ async function getRandomFragments() {
   let footer = `\n${author} meali, ${b.data.surah.name} ${surahId}/${verseId}`;
   let remaningSize = CHAR_LIMIT - footer.length;
   let str = "";
-  let verseCount = 1;
+  const firstVerseId = verseId;
   while (remaningSize > 0) {
     if (txt.length <= remaningSize) {
       str += txt;
@@ -105,12 +105,11 @@ async function getRandomFragments() {
     }
     verseId++;
     const o = await getVerseAndFootnotes(surahId, verseId, authorId);
-    verseCount++;
     txt = o.txt;
     footnotes = o.footnotes;
   }
   str += footer;
-  if (verseCount > 1) {
+  if (verseId != firstVerseId) {
     footer += "-" + verseId;
   }
   return str;
