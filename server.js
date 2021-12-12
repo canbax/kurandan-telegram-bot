@@ -50,8 +50,7 @@ app.post("/tupdate", async (req, res) => {
     res.write("received telegram update: ", req.body);
     res.end();
   } catch (err) {
-    console.log("type of request body: ", typeof req.body);
-    console.log("request body: ", req.body);
+    console.log("request body: ", typeof req.body, req.body);
     errResponseFn(err, res);
   }
 });
@@ -79,7 +78,10 @@ async function getRandomFragments() {
   const b = JSON.parse(body);
   const txt = b.data.translation.text;
   const footnotes = b.data.translation.footnotes;
-  let f = "\n" + footnotes.map((x, i) => `[${i}] ${x.text}`).join(" ");
+  let f = "";
+  if (footnotes) {
+    f = "\n" + footnotes.map((x, i) => `[${i}] ${x.text}`).join(" ");
+  }
   const author = b.data.translation.author.name;
   let footer = `\n${author},${b.data.surah.name} ${surahId}/${verseId}`;
   let remaningSize = STR_LIMIT - footer.length;
