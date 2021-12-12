@@ -42,12 +42,25 @@ app.get("/", async (req, res) => {
   }
 });
 
-// get echo
+// get telegram updates using webhook
 app.post("/tupdate", async (req, res) => {
   try {
     console.log("telegram update come with message: ", req.body.message.text);
     await processInput(req.body.message.text, req.body.message.chat.id);
     res.write("received telegram update: ", req.body);
+    res.end();
+  } catch (err) {
+    console.log("request body: ", typeof req.body, req.body);
+    errResponseFn(err, res);
+  }
+});
+
+// respond to gitlab request
+app.post("/daily", async (req, res) => {
+  try {
+    console.log("daily post: ", typeof req, req);
+    // await processInput("/rasgele", "@kurandanmesaj");
+    res.write("received daily post from gitlab: ");
     res.end();
   } catch (err) {
     console.log("request body: ", typeof req.body, req.body);
@@ -70,15 +83,16 @@ async function getRandomFragments() {
   const surahId = hp.getRandomInt(1, 114);
   const totalVerseCount = staticData.surah2verseCount[surahId];
   let verseId = hp.getRandomInt(1, totalVerseCount);
-  const randomAuthorIdx = hp.getRandomInt(0, staticData.authorIds.length - 1);
-  const authorId = staticData.authorIds[randomAuthorIdx];
+  const randomAuthorIdx = hp.getRandomInt(0, staticData.authors.length - 1);
+  const authorId = staticData.authors[randomAuthorIdx].id;
   let { txt, footnotes } = await getVerseAndFootnotes(
     surahId,
     verseId,
     authorId
   );
-  const author = b.data.translation.author.name;
-  let footer = `\n${author} meali, ${b.data.surah.name} ${surahId}/${verseId}`;
+  const author = staticData.authors[randomAuthorIdx].name;
+  const surahName = staticData.surahs[surahId - 1].name;
+  let footer = `\n${author} meali, ${surahName} ${surahId}/${verseId}`;
   let remaningSize = CHAR_LIMIT - footer.length;
   let str = "";
   const firstVerseId = verseId;
