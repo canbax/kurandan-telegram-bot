@@ -159,12 +159,6 @@ const authors = [
     language: "tr",
   },
   {
-    id: 103,
-    name: "Edip-Layth",
-    description: "Quran: A Reformist Translation",
-    language: "en",
-  },
-  {
     id: 15,
     name: "Elmalılı (sadeleştirilmiş)",
     description: null,
@@ -225,12 +219,6 @@ const authors = [
     language: "tr",
   },
   {
-    id: 101,
-    name: "Rashad Khalifa",
-    description: "The Final Testament",
-    language: "en",
-  },
-  {
     id: 25,
     name: "Şaban Piriş",
     description: "Kur'an-ı Kerim Türkçe Anlamı",
@@ -253,12 +241,6 @@ const authors = [
     name: "Süleymaniye Vakfı",
     description: "Süleymaniye Vakfı Meali",
     language: "tr",
-  },
-  {
-    id: 102,
-    name: "The Monotheist Group",
-    description: "The Quran: A Monotheist Translation",
-    language: "en",
   },
   {
     id: 30,
