@@ -51,7 +51,7 @@ app.post("/tupdate", async (req, res) => {
     res.write("received telegram update: ", req.body);
     res.end();
   } catch (err) {
-    console.log("type of request body: ", req.body);
+    console.log("type of request body: ", typeof req.body);
     console.log("request body: ", req.body);
     errResponseFn(err, res);
   }
