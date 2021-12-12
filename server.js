@@ -1,4 +1,4 @@
-require("./env");
+// require("./env");
 const express = require("express");
 const app = express();
 const got = require("got");
