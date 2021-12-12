@@ -44,9 +44,8 @@ app.get("/", async (req, res) => {
 // get echo
 app.post("/tupdate", async (req, res) => {
   try {
-    console.log(req.body);
     const b = JSON.parse(req.body);
-    console.log("text: ", b.message.text);
+    console.log("telegram update come with message: ", b.message.text);
     await processInput(b.message.text, b.message.chat.id);
     res.write("received telegram update: ", req.body);
     res.end();
@@ -116,7 +115,6 @@ async function getBotInfo() {
 async function hasWebhook() {
   try {
     const { body } = await got(URL + "getWebhookInfo");
-    console.log(body);
     const b = JSON.parse(body);
     return b.result.url.length > 0;
   } catch (err) {
@@ -131,7 +129,6 @@ async function setWebhook() {
       return;
     }
     const { body } = await got(URL + "setWebhook?url=" + webhook);
-    console.log(body);
     const b = JSON.parse(body);
     return b.result.url.length > 0;
   } catch (err) {
@@ -145,7 +142,6 @@ async function setCommands() {
       commands: [{ command: "rasgele", description: "rasgele getirir" }],
     };
     const { body } = await got.post(URL + "setMyCommands", { json: b });
-    console.log(body);
   } catch (err) {
     console.log("Error: ", err);
   }
@@ -154,7 +150,7 @@ async function setCommands() {
 async function main() {
   // app.use(express.static('public'));
   const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => console.log("proxy server on " + PORT));
+  app.listen(PORT, () => console.log("server on " + PORT));
 
   await setWebhook();
   await setCommands();
