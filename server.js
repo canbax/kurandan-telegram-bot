@@ -37,12 +37,20 @@ app.get("/", async (req, res) => {
 app.post("/tupdate", async (req, res) => {
   try {
     console.log(req.body);
+    const b = JSON.parse(req.body);
+    console.log("text: ", b.message.text);
     res.write("received telegram update: ", req.body);
     res.end();
   } catch (err) {
     errResponseFn(err, res);
   }
 });
+
+async function processInput(txt) {
+  if (txt == "/rasgele") {
+    
+  }
+}
 
 async function getBotInfo() {
   try {
@@ -83,14 +91,7 @@ async function setWebhook() {
 async function setCommands() {
   try {
     const b = {
-      commands: [
-        { command: "rasgele", description: "rasgele kısımlar getirir" },
-        {
-          command: "getir",
-          description:
-            "x,y,z pozitif tam sayılar olmak üzere '/getir x/y' ya da '/getir x/y-z' komutları ile x. surenin y. ayetini ya da [y,z] aralığındaki ayetleri getirir ",
-        },
-      ],
+      commands: [{ command: "rasgele", description: "rasgele getirir" }],
     };
     const { body } = await got.post(URL + "setMyCommands", { json: b });
     console.log(body);
