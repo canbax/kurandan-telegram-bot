@@ -120,4 +120,4 @@ const authorIds = [
   25, 26, 27, 52, 102, 30,
 ];
 
-module.exports = { authors, surahs };
+module.exports = { authorIds, surah2verseCount };

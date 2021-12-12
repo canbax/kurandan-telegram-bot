@@ -2,7 +2,7 @@
 const express = require("express");
 const app = express();
 const got = require("got");
-const data = require("./data");
+const staticData = require("./data");
 const hp = require("./helper");
 const bodyParser = require("body-parser");
 const STR_LIMIT = 280;
@@ -64,9 +64,9 @@ async function processInput(txt) {
 
 async function getRandomFragments() {
   const surahId = hp.getRandomInt(1, 114);
-  const verseCount = data.surah2verseCount[surahId];
+  const verseCount = staticData.surah2verseCount[surahId];
   const verseId = hp.getRandomInt(1, verseCount);
-  const authorId = hp.getRandomInt(0, data.authorIds.length - 1);
+  const authorId = hp.getRandomInt(0, staticData.authorIds.length - 1);
   const { body } = await got(
     `https://api.acikkuran.com/surah/${surahId}/verse/${verseId}?author=${authorId}`
   );
