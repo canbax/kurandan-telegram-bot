@@ -59,9 +59,14 @@ app.post("/tupdate", async (req, res) => {
 app.post("/daily", async (req, res) => {
   try {
     console.log("daily post: ", typeof req.body, req.body);
-    // await processInput("/rasgele", "@kurandanmesaj");
-    res.write("received daily post from gitlab: ");
-    res.end();
+    if (req.body.pwd != TOKEN) {
+      res.write("need password!");
+      res.end();
+    } else {
+      await processInput("/rasgele", "@kurandanmesaj");
+      res.write("received daily post from gitlab");
+      res.end();
+    }
   } catch (err) {
     console.log("request body: ", typeof req.body, req.body);
     errResponseFn(err, res);
