@@ -1,4 +1,4 @@
-// require("./env");
+require("./env");
 const express = require("express");
 const app = express();
 const got = require("got");
@@ -82,21 +82,30 @@ async function setWebhook() {
 
 async function setCommands() {
   try {
-    const b = JSON.stringify({
+    const b = {
       commands: [
         { command: "rasgele", description: "rasgele kısımlar getirir" },
+        {
+          command: "getir",
+          description:
+            "x,y,z pozitif tam sayılar olmak üzere '/getir x/y' ya da '/getir x/y-z' komutları ile x. surenin y. ayetini ya da [y,z] aralığındaki ayetleri getirir ",
+        },
       ],
-    });
-    const { body } = await got.post(URL + "setMyCommands", { body: b });
+    };
+    const { body } = await got.post(URL + "setMyCommands", { json: b });
     console.log(body);
   } catch (err) {
     console.log("Error: ", err);
   }
 }
 
-setWebhook();
-setCommands();
+async function main() {
+  // app.use(express.static('public'));
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => console.log("proxy server on " + PORT));
 
-// app.use(express.static('public'));
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log("proxy server on " + PORT));
+  await setWebhook();
+  await setCommands();
+}
+
+main();
