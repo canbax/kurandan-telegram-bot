@@ -47,7 +47,7 @@ app.post("/tupdate", async (req, res) => {
     console.log(req.body);
     const b = JSON.parse(req.body);
     console.log("text: ", b.message.text);
-    await processInput(b.message.text);
+    await processInput(b.message.text, b.message.chat.id);
     res.write("received telegram update: ", req.body);
     res.end();
   } catch (err) {
@@ -55,10 +55,15 @@ app.post("/tupdate", async (req, res) => {
   }
 });
 
-async function processInput(txt) {
+async function processInput(txt, chatId) {
   if (txt == "/rasgele") {
+    console.log("process for random: ", s);
     let s = await getRandomFragments();
     console.log("msg: ", s);
+    const { body } = await got.post(URL + "sendMessage", {
+      json: { chat_id: chatId, text: s },
+    });
+    console.log("response to send message: ", body);
   }
 }
 
