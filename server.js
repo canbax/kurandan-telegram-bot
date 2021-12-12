@@ -26,6 +26,7 @@ const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const URL = "https://api.telegram.org/bot" + TOKEN + "/";
 
 function errResponseFn(err, res) {
+  console.log(err);
   res.write("Error: ", JSON.stringify(err));
   res.end();
 }
