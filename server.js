@@ -2,7 +2,10 @@
 const express = require("express");
 const app = express();
 const got = require("got");
+const data = require("./data");
+const hp = require("./helper");
 const bodyParser = require("body-parser");
+const STR_LIMIT = 280;
 
 // allow every browser to get response from this server, this MUST BE AT THE TOP
 app.use(function (req, res, next) {
@@ -22,6 +25,11 @@ if (!process.env.TELEGRAM_BOT_TOKEN) {
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const URL = "https://api.telegram.org/bot" + TOKEN + "/";
 
+function errResponseFn(err, res) {
+  res.write("Error: ", JSON.stringify(err));
+  res.end();
+}
+
 // get echo
 app.get("/", async (req, res) => {
   try {
@@ -39,6 +47,7 @@ app.post("/tupdate", async (req, res) => {
     console.log(req.body);
     const b = JSON.parse(req.body);
     console.log("text: ", b.message.text);
+    await processInput(b.message.text);
     res.write("received telegram update: ", req.body);
     res.end();
   } catch (err) {
@@ -48,8 +57,45 @@ app.post("/tupdate", async (req, res) => {
 
 async function processInput(txt) {
   if (txt == "/rasgele") {
-    
+    let s = await getRandomFragments();
+    console.log("msg: ", s);
   }
+}
+
+async function getRandomFragments() {
+  const surahId = hp.getRandomInt(1, 114);
+  const verseCount = data.surah2verseCount[surahId];
+  const verseId = hp.getRandomInt(1, verseCount);
+  const authorId = hp.getRandomInt(0, data.authorIds.length - 1);
+  const { body } = await got(
+    `https://api.acikkuran.com/surah/${surahId}/verse/${verseId}?author=${authorId}`
+  );
+  const b = JSON.parse(b);
+  const txt = b.data.translation.text;
+  const footnotes = b.data.translation.footnotes;
+  let f = "\n" + footnotes.map((x, i) => `[${i}] ${x.text}`).join(" ");
+  const author = b.data.translation.author.name;
+  let footer = `\n${author},${b.data.surah.name} ${surahId}/${verseId}`;
+  let remaningSize = STR_LIMIT - footer.length;
+  let str = "";
+  while (remaningSize > 0) {
+    if (txt.length <= remaningSize) {
+      str += txt;
+      remaningSize -= txt.length;
+    } else {
+      str += txt.substring(0, remaningSize - 3) + "...";
+      break;
+    }
+    if (footnotes) {
+      str += f;
+      remaningSize -= f.length;
+    } else {
+      str += f.substring(0, remaningSize - 3) + "...";
+      break;
+    }
+  }
+  str += footer;
+  return str;
 }
 
 async function getBotInfo() {
