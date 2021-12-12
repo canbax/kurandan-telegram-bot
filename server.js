@@ -76,8 +76,7 @@ async function getRandomFragments() {
   const { body } = await got(
     `https://api.acikkuran.com/surah/${surahId}/verse/${verseId}?author=${authorId}`
   );
-  console.log("açık kuran resp: ", typeof body, body);
-  const b = JSON.parse(b);
+  const b = JSON.parse(body);
   const txt = b.data.translation.text;
   const footnotes = b.data.translation.footnotes;
   let f = "\n" + footnotes.map((x, i) => `[${i}] ${x.text}`).join(" ");
