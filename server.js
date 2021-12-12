@@ -45,9 +45,8 @@ app.get("/", async (req, res) => {
 // get echo
 app.post("/tupdate", async (req, res) => {
   try {
-    const b = JSON.parse(req.body);
-    console.log("telegram update come with message: ", b.message.text);
-    await processInput(b.message.text, b.message.chat.id);
+    console.log("telegram update come with message: ", req.body.message.text);
+    await processInput(req.body.message.text, req.body.message.chat.id);
     res.write("received telegram update: ", req.body);
     res.end();
   } catch (err) {
