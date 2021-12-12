@@ -96,6 +96,7 @@ async function getRandomFragments() {
   let remaningSize = CHAR_LIMIT - footer.length;
   let str = "";
   const firstVerseId = verseId;
+  console.log("firstVerseId", firstVerseId);
   while (remaningSize > 0) {
     if (txt.length <= remaningSize) {
       str += txt;
@@ -119,9 +120,10 @@ async function getRandomFragments() {
     }
     verseId++;
     const o = await getVerseAndFootnotes(surahId, verseId, authorId);
-    txt = o.txt;
+    txt = " " + o.txt;
     footnotes = o.footnotes;
   }
+  console.log("firstVerseId", firstVerseId, " verseId", verseId);
   str += footer;
   if (verseId != firstVerseId) {
     footer += "-" + verseId;
