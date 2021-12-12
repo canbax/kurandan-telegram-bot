@@ -58,7 +58,6 @@ app.post("/tupdate", async (req, res) => {
 
 async function processInput(txt, chatId) {
   if (txt == "/rasgele") {
-    console.log("process for random: ", s);
     let s = await getRandomFragments();
     console.log("msg: ", s);
     const { body } = await got.post(URL + "sendMessage", {
@@ -72,10 +71,12 @@ async function getRandomFragments() {
   const surahId = hp.getRandomInt(1, 114);
   const verseCount = staticData.surah2verseCount[surahId];
   const verseId = hp.getRandomInt(1, verseCount);
-  const authorId = hp.getRandomInt(0, staticData.authorIds.length - 1);
+  const randomAuthorIdx = hp.getRandomInt(0, staticData.authorIds.length - 1);
+  const authorId = staticData.authorIds[randomAuthorIdx];
   const { body } = await got(
     `https://api.acikkuran.com/surah/${surahId}/verse/${verseId}?author=${authorId}`
   );
+  console.log("açık kuran resp: ", typeof body, body);
   const b = JSON.parse(b);
   const txt = b.data.translation.text;
   const footnotes = b.data.translation.footnotes;
