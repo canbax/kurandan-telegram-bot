@@ -5,7 +5,7 @@ const got = require("got");
 const staticData = require("./data");
 const hp = require("./helper");
 const bodyParser = require("body-parser");
-const STR_LIMIT = 280;
+const CHAR_LIMIT = 275;
 
 // allow every browser to get response from this server, this MUST BE AT THE TOP
 app.use(function (req, res, next) {
@@ -69,23 +69,19 @@ async function processInput(txt, chatId) {
 async function getRandomFragments() {
   const surahId = hp.getRandomInt(1, 114);
   const verseCount = staticData.surah2verseCount[surahId];
-  const verseId = hp.getRandomInt(1, verseCount);
+  let verseId = hp.getRandomInt(1, verseCount);
   const randomAuthorIdx = hp.getRandomInt(0, staticData.authorIds.length - 1);
   const authorId = staticData.authorIds[randomAuthorIdx];
-  const { body } = await got(
-    `https://api.acikkuran.com/surah/${surahId}/verse/${verseId}?author=${authorId}`
+  let { txt, footnotes } = await getVerseAndFootnotes(
+    surahId,
+    verseId,
+    authorId
   );
-  const b = JSON.parse(body);
-  const txt = b.data.translation.text;
-  const footnotes = b.data.translation.footnotes;
-  let f = "";
-  if (footnotes) {
-    f = "\n" + footnotes.map((x, i) => `[${i}] ${x.text}`).join(" ");
-  }
   const author = b.data.translation.author.name;
-  let footer = `\n${author},${b.data.surah.name} ${surahId}/${verseId}`;
-  let remaningSize = STR_LIMIT - footer.length;
+  let footer = `\n${author} meali, ${b.data.surah.name} ${surahId}/${verseId}`;
+  let remaningSize = CHAR_LIMIT - footer.length;
   let str = "";
+  let verseCount = 1;
   while (remaningSize > 0) {
     if (txt.length <= remaningSize) {
       str += txt;
@@ -95,15 +91,44 @@ async function getRandomFragments() {
       break;
     }
     if (footnotes) {
-      str += f;
-      remaningSize -= f.length;
-    } else {
-      str += f.substring(0, remaningSize - 3) + "...";
+      if (footnotes.length <= remaningSize) {
+        str += footnotes;
+        remaningSize -= footnotes.length;
+      } else {
+        str += footnotes.substring(0, remaningSize - 3) + "...";
+        break;
+      }
+    }
+    // it is the last verse
+    if (verseId == staticData.surah2verseCount[surahId]) {
       break;
     }
+    verseId++;
+    const o = await getVerseAndFootnotes(surahId, verseId, authorId);
+    verseCount++;
+    txt = o.txt;
+    footnotes = o.footnotes;
   }
   str += footer;
+  if (verseCount > 1) {
+    footer += "-" + verseId;
+  }
   return str;
+}
+
+async function getVerseAndFootnotes(surahId, verseId, authorId) {
+  const { body } = await got(
+    `https://api.acikkuran.com/surah/${surahId}/verse/${verseId}?author=${authorId}`
+  );
+  const b = JSON.parse(body);
+  let txt = b.data.translation.text;
+  let footnotes = "";
+  if (b.data.translation.footnotes) {
+    footnotes =
+      "\n" +
+      b.data.translation.footnotes.map((x, i) => `[${i}] ${x.text}`).join(" ");
+  }
+  return { txt, footnotes };
 }
 
 async function getBotInfo() {
