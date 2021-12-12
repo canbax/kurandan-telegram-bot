@@ -58,7 +58,7 @@ app.post("/tupdate", async (req, res) => {
 // respond to gitlab request
 app.post("/daily", async (req, res) => {
   try {
-    console.log("daily post: ", typeof req, req);
+    console.log("daily post: ", typeof req.body, req.body);
     // await processInput("/rasgele", "@kurandanmesaj");
     res.write("received daily post from gitlab: ");
     res.end();
