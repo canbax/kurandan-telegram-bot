@@ -24,7 +24,7 @@ if (!process.env.TELEGRAM_BOT_TOKEN) {
 }
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const URL = "https://api.telegram.org/bot" + TOKEN + "/";
-const welcomeMsg = "Bu Kur'an'dan pasajlar getiren bir bottur. '/getir' komutu ile rastgele pasaj getirebilirsiniz."
+const welcomeMsg = "Merhaba. Ben Kur'an'dan pasajlar getiren bir botum :) /pasaj komutu ile rastgele pasaj getirebilirsiniz."
 
 function errResponseFn(err, res) {
   console.log(err);
@@ -64,7 +64,7 @@ app.post("/daily", async (req, res) => {
       res.write("need password!");
       res.end();
     } else {
-      await processInput("/getir", "@kurandanmesaj");
+      await processInput("/pasaj", "@kurandanmesaj");
       res.write("received daily post from gitlab");
       res.end();
     }
@@ -75,7 +75,7 @@ app.post("/daily", async (req, res) => {
 });
 
 async function processInput(txt, chatId) {
-  if (txt == "/getir") {
+  if (txt == "/pasaj") {
     let s = await getRandomFragments();
     await got.post(URL + "sendMessage", {
       json: { chat_id: chatId, text: s },
@@ -189,7 +189,7 @@ async function setWebhook() {
 async function setCommands() {
   try {
     const b = {
-      commands: [{ command: "getir", description: "Rastgele pasaj getirir" }],
+      commands: [{ command: "pasaj", description: "Rastgele pasaj getirir" }],
     };
     const { body } = await got.post(URL + "setMyCommands", { json: b });
   } catch (err) {
