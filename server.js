@@ -1,11 +1,10 @@
-require("./env");
+// require("./env");
 const express = require("express");
 const app = express();
 const got = require("got");
 const staticData = require("./data");
 const hp = require("./helper");
 const bodyParser = require("body-parser");
-const TwitterApi = require("twitter-api-v2");
 const CHAR_LIMIT = 275;
 
 // allow every browser to get response from this server, this MUST BE AT THE TOP
@@ -46,55 +45,21 @@ app.get("/", async (req, res) => {
 });
 
 // get echo
-app.get("/twitter_login", async (req, res) => {
-  const client = new TwitterApi({
-    appKey: process.env.TWITTER_CONSUMER_KEY,
-    appSecret: process.env.TWITTER_CONSUMER_SECRET,
-  });
-
-  const authLink = await client.generateAuthLink(
-    "https://kurandan.herokuapp.com/twitter_callback"
-  );
-
-  res.redirect(authLink.url);
-});
-
-// get echo
 app.get("/twitter_callback", async (req, res) => {
-  // Exact tokens from query string
-  const { oauth_token, oauth_verifier } = req.query;
-  // Get the saved oauth_token_secret from session
-  const { oauth_token_secret } = req.session;
-
-  if (!oauth_token || !oauth_verifier || !oauth_token_secret) {
-    return res.status(400).send("You denied the app or your session expired!");
+  try {
+    let oauth_token = req.query.oauth_token;
+    let oauth_verifier = req.query.oauth_verifier;
+    res.write(
+      "oauth_token: ",
+      oauth_token,
+      " oauth_verifier: ",
+      oauth_verifier
+    );
+    res.end();
+  } catch (err) {
+    errResponseFn(err, res);
   }
-
-  // Obtain the persistent tokens
-  // Create a client from temporary tokens
-  const client = new TwitterApi({
-    appKey: process.env.TWITTER_CONSUMER_KEY,
-    appSecret: process.env.TWITTER_CONSUMER_SECRET,
-    accessToken: oauth_token,
-    accessSecret: oauth_token_secret,
-  });
-  client
-    .login(oauth_verifier)
-    .then(({ client: loggedClient, accessToken, accessSecret }) => {
-      // loggedClient is an authentificated client in behalf of some user
-      // Store accessToken & accessSecret somewhere
-      const s = `twitter access token: ${accessToken} accessSecret: ${accessSecret} `;
-      console.log(s);
-      localStorage.setItem("twitterAccessToken", accessToken);
-      localStorage.setItem("twitterAccessSecret", accessSecret);
-      res.write(
-        `twitter access token: ${accessToken} accessSecret: ${accessSecret} `
-      );
-      res.end();
-    })
-    .catch(() => res.status(403).send("Invalid verifier or access tokens!"));
 });
-
 // get telegram updates using webhook
 app.post("/tupdate", async (req, res) => {
   try {
