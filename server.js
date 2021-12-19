@@ -303,7 +303,9 @@ async function main() {
 }
 
 async function sendTweet(txt) {
-  const authKey = `OAuth oauth_consumer_key="${k}",oauth_token="${oauth}"`;
+  const k = process.env.TWITTER_CONSUMER_KEY;
+  const o = process.env.TWITTER_OAUTH_TOKEN;
+  const authKey = `OAuth oauth_consumer_key="${k}",oauth_token="${o}"`;
 
   await got.post("https://api.twitter.com/2/tweets",
     {
