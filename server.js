@@ -24,7 +24,8 @@ if (!process.env.TELEGRAM_BOT_TOKEN) {
 }
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const URL = "https://api.telegram.org/bot" + TOKEN + "/";
-const welcomeMsg = "Merhaba. Ben Kur'an'dan pasajlar getiren bir botum :) /pasaj komutu ile rastgele pasaj getirebilirsiniz."
+const welcomeMsg =
+  "Merhaba. Ben Kur'an'dan pasajlar getiren bir botum :) /pasaj komutu ile rastgele pasaj getirebilirsiniz.";
 
 function errResponseFn(err, res) {
   console.log(err);
@@ -43,6 +44,22 @@ app.get("/", async (req, res) => {
   }
 });
 
+// get echo
+app.get("/twitter_callback", async (req, res) => {
+  try {
+    let oauth_token = req.query.oauth_token;
+    let oauth_verifier = req.query.oauth_verifier;
+    res.write(
+      "oauth_token: ",
+      oauth_token,
+      " oauth_verifier: ",
+      oauth_verifier
+    );
+    res.end();
+  } catch (err) {
+    errResponseFn(err, res);
+  }
+});
 // get telegram updates using webhook
 app.post("/tupdate", async (req, res) => {
   try {
