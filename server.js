@@ -116,18 +116,31 @@ app.get("/twitter_callback", async (req, res) => {
       //   userTokenSecret
       // }
       // req.session.user = user;
-
       // Redirect to whatever route that can handle your new Twitter login user details!
       res.redirect("/twitter_success");
     }
   );
 });
+
 // get telegram updates using webhook
 app.post("/tupdate", async (req, res) => {
   try {
     console.log("telegram update come with message: ", req.body.message.text);
     await processInput(req.body.message.text, req.body.message.chat.id);
     res.write("received telegram update: ", req.body);
+    res.end();
+  } catch (err) {
+    console.log("request body: ", typeof req.body, req.body);
+    errResponseFn(err, res);
+  }
+});
+
+// get telegram updates using webhook
+app.post("/tweet_test", async (req, res) => {
+  try {
+    let txt = await getRandomFragments();
+    await sendTweet(txt);
+    res.write("received tweet test");
     res.end();
   } catch (err) {
     console.log("request body: ", typeof req.body, req.body);
@@ -143,7 +156,9 @@ app.post("/daily", async (req, res) => {
       res.write("need password!");
       res.end();
     } else {
-      await processInput("/pasaj", "@kurandanmesaj");
+      let txt = await getRandomFragments();
+      await sendTelegramMsg(txt, "@kurandanmesaj");
+      await sendTweet(txt);
       res.write("received daily post from gitlab");
       res.end();
     }
@@ -156,14 +171,16 @@ app.post("/daily", async (req, res) => {
 async function processInput(txt, chatId) {
   if (txt == "/pasaj") {
     let s = await getRandomFragments();
-    await got.post(URL + "sendMessage", {
-      json: { chat_id: chatId, text: s },
-    });
+    await sendTelegramMsg(s, chatId);
   } else if (txt == "/start") {
-    await got.post(URL + "sendMessage", {
-      json: { chat_id: chatId, text: welcomeMsg },
-    });
+    await sendTelegramMsg(welcomeMsg, chatId);
   }
+}
+
+async function sendTelegramMsg(msg, chatId) {
+  await got.post(URL + "sendMessage", {
+    json: { chat_id: chatId, text: msg },
+  });
 }
 
 async function getRandomFragments() {
@@ -283,6 +300,28 @@ async function main() {
 
   await setWebhook();
   await setCommands();
+}
+
+async function sendTweet(txt) {
+  let data = JSON.stringify({ text: txt });
+  let xhr = new XMLHttpRequest();
+  xhr.withCredentials = true;
+
+  xhr.addEventListener("readystatechange", function () {
+    if (this.readyState === 4) {
+      console.log(this.responseText);
+    }
+  });
+
+  xhr.open("POST", "https://api.twitter.com/2/tweets");
+  const k = process.env.TWITTER_CONSUMER_KEY;
+  const oauth = process.env.TWITTER_OAUTH_TOKEN;
+  xhr.setRequestHeader(
+    "Authorization",
+    `OAuth oauth_consumer_key="${k}",oauth_token="${oauth}"`
+  );
+  xhr.setRequestHeader("Content-Type", "application/json");
+  xhr.send(data);
 }
 
 main();
