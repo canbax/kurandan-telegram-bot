@@ -59,18 +59,23 @@ app.get("/twitter_success", async (req, res) => {
 
 // get echo
 app.get("/twitter_login", async (req, res) => {
-  tw.login((err, tokenSecret, url) => {
-    if (err) {
-      // Handle the error your way
-      console.log("err in twitter login: ", err);
-    }
+  console.log("twitter login started");
+  try {
+    tw.login((err, tokenSecret, url) => {
+      if (err) {
+        // Handle the error your way
+        console.log("err in twitter login: ", err);
+      }
 
-    // Save the OAuth token secret for use in your /twitter/callback route
-    req.session.tokenSecret = tokenSecret;
+      // Save the OAuth token secret for use in your /twitter/callback route
+      req.session.tokenSecret = tokenSecret;
 
-    // Redirect to the /twitter/callback route, with the OAuth responses as query params
-    res.redirect(url);
-  });
+      // Redirect to the /twitter/callback route, with the OAuth responses as query params
+      res.redirect(url);
+    });
+  } catch (e) {
+    console.log("error in tw login");
+  }
 });
 
 // get echo
