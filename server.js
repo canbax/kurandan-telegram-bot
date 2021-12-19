@@ -303,25 +303,26 @@ async function main() {
 }
 
 async function sendTweet(txt) {
-  let data = JSON.stringify({ text: txt });
-  let xhr = new XMLHttpRequest();
-  xhr.withCredentials = true;
-
-  xhr.addEventListener("readystatechange", function () {
-    if (this.readyState === 4) {
-      console.log(this.responseText);
-    }
-  });
-
-  xhr.open("POST", "https://api.twitter.com/2/tweets");
-  const k = process.env.TWITTER_CONSUMER_KEY;
-  const oauth = process.env.TWITTER_OAUTH_TOKEN;
-  xhr.setRequestHeader(
+  let myHeaders = new Headers();
+  myHeaders.append(
     "Authorization",
-    `OAuth oauth_consumer_key="${k}",oauth_token="${oauth}"`
+    `'OAuth oauth_consumer_key="${k}",oauth_token="${oauth}"`
   );
-  xhr.setRequestHeader("Content-Type", "application/json");
-  xhr.send(data);
+  myHeaders.append("Content-Type", "application/json");
+
+  let raw = JSON.stringify({ text: txt });
+
+  let requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: raw,
+    redirect: "follow",
+  };
+
+  fetch("https://api.twitter.com/2/tweets", requestOptions)
+    .then((response) => response.text())
+    .then((result) => console.log(result))
+    .catch((error) => console.log("error", error));
 }
 
 main();
