@@ -303,26 +303,13 @@ async function main() {
 }
 
 async function sendTweet(txt) {
-  let myHeaders = new Headers();
-  myHeaders.append(
-    "Authorization",
-    `'OAuth oauth_consumer_key="${k}",oauth_token="${oauth}"`
-  );
-  myHeaders.append("Content-Type", "application/json");
+  const authKey = `OAuth oauth_consumer_key="${k}",oauth_token="${oauth}"`;
 
-  let raw = JSON.stringify({ text: txt });
-
-  let requestOptions = {
-    method: "POST",
-    headers: myHeaders,
-    body: raw,
-    redirect: "follow",
-  };
-
-  fetch("https://api.twitter.com/2/tweets", requestOptions)
-    .then((response) => response.text())
-    .then((result) => console.log(result))
-    .catch((error) => console.log("error", error));
+  await got.post("https://api.twitter.com/2/tweets",
+    {
+      json: { text: txt },
+      headers: { "Authorization": authKey, "Content-Type": "application/json" }
+    });
 }
 
 main();
