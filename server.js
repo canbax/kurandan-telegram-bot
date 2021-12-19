@@ -61,7 +61,7 @@ app.get("/", async (req, res) => {
 
 // get echo
 app.get("/twitter_success", async (req, res) => {
-  res.write("twitter_success!");
+  res.write("twitter success!");
   res.end();
 });
 
@@ -101,6 +101,7 @@ app.get("/twitter_callback", async (req, res) => {
         console.log("err in twitter callback: ", err);
       }
 
+      console.log("user: ", user);
       // Delete the tokenSecret securely
       delete req.session.tokenSecret;
 
