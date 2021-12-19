@@ -5,8 +5,16 @@ const got = require("got");
 const staticData = require("./data");
 const hp = require("./helper");
 const bodyParser = require("body-parser");
-const CHAR_LIMIT = 275;
+const session = require("express-session");
 const LoginWithTwitter = require("login-with-twitter");
+const CHAR_LIMIT = 275;
+const sessionConfig = {
+  user: null,
+  tokenSecret: null,
+  secret: "keyboard cat",
+};
+
+app.use(session(sessionConfig));
 
 // allow every browser to get response from this server, this MUST BE AT THE TOP
 app.use(function (req, res, next) {
@@ -73,8 +81,9 @@ app.get("/twitter_login", async (req, res) => {
       // Redirect to the /twitter/callback route, with the OAuth responses as query params
       res.redirect(url);
     });
-  } catch (e) {
-    console.log("error in tw login");
+  } catch (err) {
+    console.log("error in tw login:", err);
+    errResponseFn(err, res);
   }
 });
 
