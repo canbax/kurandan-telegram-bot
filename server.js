@@ -136,7 +136,7 @@ app.post("/tupdate", async (req, res) => {
 });
 
 // get telegram updates using webhook
-app.post("/tweet_test", async (req, res) => {
+app.get("/tweet_test", async (req, res) => {
   try {
     let txt = await getRandomFragments();
     await sendTweet(txt);
