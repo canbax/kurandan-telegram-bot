@@ -6,7 +6,7 @@ const staticData = require("./data");
 const hp = require("./helper");
 const bodyParser = require("body-parser");
 const session = require("express-session");
-const LoginWithTwitter = require("login-with-twitter");
+// const LoginWithTwitter = require("login-with-twitter");
 const CHAR_LIMIT = 275;
 const sessionConfig = {
   user: null,
@@ -42,12 +42,6 @@ function errResponseFn(err, res) {
   res.end();
 }
 
-const tw = new LoginWithTwitter({
-  consumerKey: process.env.TWITTER_CONSUMER_KEY,
-  consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
-  callbackUrl: "https://kurandan.herokuapp.com/twitter_callback",
-});
-
 // get echo
 app.get("/", async (req, res) => {
   try {
@@ -59,75 +53,12 @@ app.get("/", async (req, res) => {
   }
 });
 
-// get echo
-app.get("/twitter_success", async (req, res) => {
-  res.write("twitter success!");
-  res.end();
-});
-
-// get echo
-app.get("/twitter_login", async (req, res) => {
-  console.log("twitter login started");
-  try {
-    tw.login((err, tokenSecret, url) => {
-      if (err) {
-        // Handle the error your way
-        console.log("err in twitter login: ", err);
-      }
-
-      // Save the OAuth token secret for use in your /twitter/callback route
-      req.session.tokenSecret = tokenSecret;
-
-      // Redirect to the /twitter/callback route, with the OAuth responses as query params
-      res.redirect(url);
-    });
-  } catch (err) {
-    console.log("error in tw login:", err);
-    errResponseFn(err, res);
-  }
-});
-
-// get echo
-app.get("/twitter_callback", async (req, res) => {
-  tw.callback(
-    {
-      oauth_token: req.query.oauth_token,
-      oauth_verifier: req.query.oauth_verifier,
-    },
-    req.session.tokenSecret,
-    (err, user) => {
-      if (err) {
-        // Handle the error your way
-        console.log("err in twitter callback: ", err);
-      }
-
-      console.log("user: ", user);
-      // Delete the tokenSecret securely
-      delete req.session.tokenSecret;
-
-      // The user object contains 4 key/value pairs, which
-      // you should store and use as you need, e.g. with your
-      // own calls to Twitter's API, or a Twitter API module
-      // like `twitter` or `twit`.
-      // user = {
-      //   userId,
-      //   userName,
-      //   userToken,
-      //   userTokenSecret
-      // }
-      // req.session.user = user;
-      // Redirect to whatever route that can handle your new Twitter login user details!
-      res.redirect("/twitter_success");
-    }
-  );
-});
-
 // get telegram updates using webhook
-app.post("/tupdate", async (req, res) => {
+app.get("/tweet_test", async (req, res) => {
   try {
-    console.log("telegram update come with message: ", req.body.message.text);
-    await processInput(req.body.message.text, req.body.message.chat.id);
-    res.write("received telegram update: ", req.body);
+    let txt = await getRandomFragments();
+    await sendTweet(txt);
+    res.write("received tweet test");
     res.end();
   } catch (err) {
     console.log("request body: ", typeof req.body, req.body);
@@ -136,11 +67,11 @@ app.post("/tupdate", async (req, res) => {
 });
 
 // get telegram updates using webhook
-app.get("/tweet_test", async (req, res) => {
+app.post("/tupdate", async (req, res) => {
   try {
-    let txt = await getRandomFragments();
-    await sendTweet(txt);
-    res.write("received tweet test");
+    console.log("telegram update come with message: ", req.body.message.text);
+    await processInput(req.body.message.text, req.body.message.chat.id);
+    res.write("received telegram update: ", req.body);
     res.end();
   } catch (err) {
     console.log("request body: ", typeof req.body, req.body);
@@ -167,6 +98,75 @@ app.post("/daily", async (req, res) => {
     errResponseFn(err, res);
   }
 });
+
+// const tw = new LoginWithTwitter({
+//   consumerKey: process.env.TWITTER_CONSUMER_KEY,
+//   consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
+//   callbackUrl: "https://kurandan.herokuapp.com/twitter_callback",
+// });
+
+// // redirect from twitter login
+// app.get("/twitter_success", async (req, res) => {
+//   res.write("twitter success!");
+//   res.end();
+// });
+
+// // twitter login click
+// app.get("/twitter_login", async (req, res) => {
+//   console.log("twitter login started");
+//   try {
+//     tw.login((err, tokenSecret, url) => {
+//       if (err) {
+//         // Handle the error your way
+//         console.log("err in twitter login: ", err);
+//       }
+
+//       // Save the OAuth token secret for use in your /twitter/callback route
+//       req.session.tokenSecret = tokenSecret;
+
+//       // Redirect to the /twitter/callback route, with the OAuth responses as query params
+//       res.redirect(url);
+//     });
+//   } catch (err) {
+//     console.log("error in tw login:", err);
+//     errResponseFn(err, res);
+//   }
+// });
+
+// // twitter callbacks
+// app.get("/twitter_callback", async (req, res) => {
+//   tw.callback(
+//     {
+//       oauth_token: req.query.oauth_token,
+//       oauth_verifier: req.query.oauth_verifier,
+//     },
+//     req.session.tokenSecret,
+//     (err, user) => {
+//       if (err) {
+//         // Handle the error your way
+//         console.log("err in twitter callback: ", err);
+//       }
+
+//       console.log("user: ", user);
+//       // Delete the tokenSecret securely
+//       delete req.session.tokenSecret;
+
+//       // The user object contains 4 key/value pairs, which
+//       // you should store and use as you need, e.g. with your
+//       // own calls to Twitter's API, or a Twitter API module
+//       // like `twitter` or `twit`.
+//       // user = {
+//       //   userId,
+//       //   userName,
+//       //   userToken,
+//       //   userTokenSecret
+//       // }
+//       // req.session.user = user;
+//       // Redirect to whatever route that can handle your new Twitter login user details!
+//       res.redirect("/twitter_success");
+//     }
+//   );
+// });
 
 async function processInput(txt, chatId) {
   if (txt == "/pasaj") {
