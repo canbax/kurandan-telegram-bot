@@ -339,7 +339,7 @@ async function sendTweet(txt) {
   }, token));
 
   const req = await got.post(endpointURL, {
-    json: data,
+    json: { text: txt },
     responseType: 'json',
     headers: {
       Authorization: authHeader["Authorization"],
