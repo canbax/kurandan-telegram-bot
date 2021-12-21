@@ -348,7 +348,7 @@ async function sendTweet(txt) {
       'accept': "application/json"
     }
   });
-  console.log("response to send tweet: ", req);
+  console.log("response to send tweet: ", req.body);
 }
 
 main();
