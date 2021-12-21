@@ -65,17 +65,17 @@ app.get("/", async (req, res) => {
 });
 
 // get telegram updates using webhook
-app.get("/tweet_test", async (req, res) => {
-  try {
-    let txt = await getRandomFragments();
-    await sendTweet(txt);
-    res.write("received tweet test");
-    res.end();
-  } catch (err) {
-    console.log("request body: ", typeof req.body, req.body);
-    errResponseFn(err, res);
-  }
-});
+// app.get("/tweet_test", async (req, res) => {
+//   try {
+//     let txt = await getRandomFragments();
+//     await sendTweet(txt);
+//     res.write("received tweet test");
+//     res.end();
+//   } catch (err) {
+//     console.log("request body: ", typeof req.body, req.body);
+//     errResponseFn(err, res);
+//   }
+// });
 
 // get telegram updates using webhook
 app.post("/tupdate", async (req, res) => {
