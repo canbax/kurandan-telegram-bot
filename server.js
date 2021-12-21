@@ -6,6 +6,8 @@ const staticData = require("./data");
 const hp = require("./helper");
 const bodyParser = require("body-parser");
 const session = require("express-session");
+const crypto = require('crypto');
+const OAuth = require('oauth-1.0a');
 // const LoginWithTwitter = require("login-with-twitter");
 const CHAR_LIMIT = 275;
 const sessionConfig = {
@@ -13,6 +15,15 @@ const sessionConfig = {
   tokenSecret: null,
   secret: "keyboard cat",
 };
+
+const oauth = OAuth({
+  consumer: {
+    key: process.env.TWITTER_CONSUMER_KEY,
+    secret: process.env.TWITTER_CONSUMER_SECRET
+  },
+  signature_method: 'HMAC-SHA1',
+  hash_function: (baseString, key) => crypto.createHmac('sha1', key).update(baseString).digest('base64')
+});
 
 app.use(session(sessionConfig));
 
@@ -302,16 +313,42 @@ async function main() {
   await setCommands();
 }
 
-async function sendTweet(txt) {
-  const k = process.env.TWITTER_CONSUMER_KEY;
-  const o = process.env.TWITTER_OAUTH_TOKEN;
-  const authKey = `OAuth oauth_consumer_key="${k}",oauth_token="${o}",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1639941876",oauth_nonce="u6S7dSpsmup",oauth_version="1.0",oauth_signature="lvosV38p1%2FAdwp1g64EuuPQji9U%3D"`;
+// async function sendTweet(txt) {
+//   const k = process.env.TWITTER_CONSUMER_KEY;
+//   const o = process.env.TWITTER_OAUTH_TOKEN;
+//   const authKey = `OAuth oauth_consumer_key="${k}",oauth_token="${o}",oauth_signature_method="HMAC-SHA1",oauth_nonce="u6S7dSpsmup",oauth_version="1.0",oauth_signature="lvosV38p1%2FAdwp1g64EuuPQji9U%3D"`;
 
-  await got.post("https://api.twitter.com/2/tweets",
-    {
-      json: { text: txt },
-      headers: { "Authorization": authKey, "Content-Type": "application/json" }
-    });
+//   await got.post("https://api.twitter.com/2/tweets",
+//     {
+//       json: { text: txt },
+//       headers: { "Authorization": authKey, "Content-Type": "application/json" }
+//     });
+// }
+""
+async function sendTweet(txt) {
+  const k = process.env.TWITTER_OAUTH_TOKEN;
+  const o = process.env.TWITTER_TOKEN_SECRET;
+  const token = {
+    key: k, secret: o
+  };
+  const endpointURL = "https://api.twitter.com/2/tweets";
+
+  const authHeader = oauth.toHeader(oauth.authorize({
+    url: endpointURL,
+    method: 'POST'
+  }, token));
+
+  const req = await got.post(endpointURL, {
+    json: data,
+    responseType: 'json',
+    headers: {
+      Authorization: authHeader["Authorization"],
+      'user-agent': "v2CreateTweetJS",
+      'content-type': "application/json",
+      'accept': "application/json"
+    }
+  });
+  console.log("response to send tweet: ", req);
 }
 
 main();
