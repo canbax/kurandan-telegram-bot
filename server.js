@@ -53,17 +53,6 @@ function errResponseFn(err, res) {
   res.end();
 }
 
-// get echo
-app.get("/", async (req, res) => {
-  try {
-    console.log("Hi!");
-    res.write("Hi!");
-    res.end();
-  } catch (err) {
-    errResponseFn(err, res);
-  }
-});
-
 // get telegram updates using webhook
 // app.get("/tweet_test", async (req, res) => {
 //   try {
