@@ -294,7 +294,7 @@ async function setCommands() {
 }
 
 async function main() {
-  // app.use(express.static('public'));
+  app.use(express.static('public'));
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => console.log("server on " + PORT));
 
