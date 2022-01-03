@@ -243,8 +243,8 @@ async function getVerseAndFootnotes(surahId, verseId, authorId) {
   let footnotes = "";
   if (b.data.translation.footnotes) {
     footnotes =
-      "\n" +
-      b.data.translation.footnotes.map((x, i) => `[${i}] ${x.text}`).join(" ");
+      "\n(" +
+      b.data.translation.footnotes.map((x, i) => `[${i + 1}] ${x.text}`).join(" ") + ")";
   }
   return { txt, footnotes };
 }
