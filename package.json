@@ -2,7 +2,7 @@
   "name": "kurandan-telegram-bot",
   "version": "1.0.0",
   "description": "Kur'an'dan kısımlar getiren telegram botu",
-  "main": "server.js",
+  "main": "api/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

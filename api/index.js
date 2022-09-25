@@ -2,8 +2,8 @@
 const express = require("express");
 const app = express();
 const got = require("got");
-const staticData = require("./data");
-const hp = require("./helper");
+const staticData = require("../data");
+const hp = require("../helper");
 const bodyParser = require("body-parser");
 const session = require("express-session");
 const crypto = require("crypto");
@@ -68,7 +68,7 @@ function errResponseFn(err, res) {
 // });
 
 // get telegram updates using webhook
-app.post("/tupdate", async (req, res) => {
+app.post("/api/tupdate", async (req, res) => {
   try {
     console.log("telegram update come with message: ", req.body.message.text);
     await processInput(req.body.message.text, req.body.message.chat.id);
@@ -81,7 +81,7 @@ app.post("/tupdate", async (req, res) => {
 });
 
 // respond to gitlab request
-app.post("/daily", async (req, res) => {
+app.post("/api/daily", async (req, res) => {
   try {
     console.log("daily post: ", typeof req.body, req.body);
     if (req.body.pwd != TOKEN) {
@@ -270,7 +270,7 @@ async function hasWebhook() {
 }
 
 async function setWebhook() {
-  const webhook = "https://kurandan.herokuapp.com/tupdate";
+  const webhook = "https://kurandan.vercel.app/api/tupdate";
   try {
     if (await hasWebhook()) {
       return;
