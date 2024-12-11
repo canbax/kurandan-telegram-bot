@@ -9,7 +9,7 @@ const session = require("express-session");
 const crypto = require("crypto");
 const OAuth = require("oauth-1.0a");
 // const LoginWithTwitter = require("login-with-twitter");
-const CHAR_LIMIT = 275;
+const CHAR_LIMIT = 375;
 const sessionConfig = {
   user: null,
   tokenSecret: null,
@@ -198,23 +198,23 @@ async function getRandomFragments() {
   const author = staticData.authors[randomAuthorIdx].name;
   const surahName = staticData.surahs[surahId - 1].name;
   let footer = `\n${author} meali, ${surahName} ${surahId}/${verseId}`;
-  let remaningSize = CHAR_LIMIT - footer.length;
+  let remainingSize = CHAR_LIMIT - footer.length;
   let str = "";
   const firstVerseId = verseId;
-  while (remaningSize > 0) {
-    if (txt.length <= remaningSize) {
+  while (remainingSize > 0) {
+    if (txt.length <= remainingSize) {
       str += txt;
-      remaningSize -= txt.length;
+      remainingSize -= txt.length;
     } else {
-      str += txt.substring(0, remaningSize - 3) + "...";
+      str += txt.substring(0, remainingSize - 3) + "...";
       break;
     }
     if (footnotes) {
-      if (footnotes.length <= remaningSize) {
+      if (footnotes.length <= remainingSize) {
         str += footnotes;
-        remaningSize -= footnotes.length;
+        remainingSize -= footnotes.length;
       } else {
-        str += footnotes.substring(0, remaningSize - 3) + "...";
+        str += footnotes.substring(0, remainingSize - 3) + "...";
         break;
       }
     }
@@ -244,7 +244,10 @@ async function getVerseAndFootnotes(surahId, verseId, authorId) {
   if (b.data.translation.footnotes) {
     footnotes =
       "\n(" +
-      b.data.translation.footnotes.map((x, i) => `[${i + 1}] ${x.text}`).join(" ") + ")";
+      b.data.translation.footnotes
+        .map((x, i) => `[${i + 1}] ${x.text}`)
+        .join(" ") +
+      ")";
   }
   return { txt, footnotes };
 }
