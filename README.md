@@ -1,6 +1,6 @@
 # Kur'an'dan Mesaj
 
-Rastgele bir Kur'an mealinden, rastgele bir pasaj paylaşır.
+Rastgele bir Kur'an mealinden, rastgele bir kesit paylaşır.
 
   <h2> Açıklama </h2>
   <p>
