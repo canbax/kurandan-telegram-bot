@@ -6,6 +6,8 @@ const {
   createBudget,
   pickRandomPassageStart,
 } = require("../src/passage");
+const { editions } = require("../src/editions");
+const { createLocalQuranClient } = require("../src/quran");
 
 /** Serves canned verses and records which ones were asked for. */
 function fakeQuran(versesByVerseId, calls = []) {
@@ -163,7 +165,7 @@ test("pickRandomPassageStart stays inside the real Qur'an's bounds", () => {
     assert.ok(start.firstVerseId >= 1 && start.firstVerseId <= start.verseCount);
     assert.equal(typeof start.surahName, "string");
     assert.ok(start.surahName.length > 0);
-    assert.equal(typeof start.author.id, "number");
+    assert.equal(typeof start.author.id, "string");
   }
 });
 
@@ -173,11 +175,21 @@ test("pickRandomPassageStart is deterministic for a fixed rng", () => {
     firstVerseId: 1,
     verseCount: 7,
     surahName: "Fatiha",
-    author: {
-      id: 3,
-      name: "Ahmed Hulusi",
-      description: "Türkçe Kur'an Çözümü",
-      language: "tr",
-    },
+    author: editions[0],
   });
+});
+
+test("every translation it can pick is actually bundled", async () => {
+  const quran = createLocalQuranClient();
+  try {
+    for (const edition of editions) {
+      assert.equal(typeof edition.name, "string");
+      assert.ok(edition.name.length > 0);
+      // Rejects unless data/quran/<id>.qdb exists and has a valid header.
+      const verses = await quran.fetchSurah(1, edition.id);
+      assert.equal(verses.length, 7);
+    }
+  } finally {
+    quran.close();
+  }
 });

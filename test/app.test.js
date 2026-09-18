@@ -96,13 +96,16 @@ test("POST /api/daily rejects a wrong or missing password", async () => {
 test("a failing publish answers 500 instead of an empty 200", async () => {
   const deps = spies();
   deps.getPassage = async () => {
-    throw new Error("acikkuran down");
+    throw new Error("passage unavailable");
   };
   await withApp(deps, async ({ post }) => {
     const res = await post("/api/daily", { pwd: "s3cret" });
 
     assert.equal(res.status, 500);
-    assert.deepEqual(await res.json(), { ok: false, error: "acikkuran down" });
+    assert.deepEqual(await res.json(), {
+      ok: false,
+      error: "passage unavailable",
+    });
   });
 });
 

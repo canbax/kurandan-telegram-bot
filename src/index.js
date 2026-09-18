@@ -1,8 +1,8 @@
-const { createAcikKuranClient } = require("./acikkuran");
 const { createApp } = require("./app");
 const { createBot } = require("./bot");
 const { readConfig } = require("./config");
 const { getRandomPassage } = require("./passage");
+const { createLocalQuranClient } = require("./quran");
 const { createTelegramClient } = require("./telegram");
 const { createTwitterClient } = require("./twitter");
 
@@ -16,7 +16,7 @@ const { createTwitterClient } = require("./twitter");
 function createBotApp(env = process.env) {
   const config = readConfig(env);
 
-  const quran = createAcikKuranClient();
+  const quran = createLocalQuranClient();
   const telegram = createTelegramClient({ token: config.telegramBotToken });
   const twitter = createTwitterClient(config.twitter);
   const getPassage = () => getRandomPassage({ fetchVerse: quran.fetchVerse });

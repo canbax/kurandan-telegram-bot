@@ -1,5 +1,6 @@
 const staticData = require("./data");
 const { CHAR_LIMIT } = require("./config");
+const { editions } = require("./editions");
 const { getRandomInt, pickRandom } = require("./random");
 
 const ELLIPSIS = "...";
@@ -106,7 +107,7 @@ function pickRandomPassageStart(rng = Math.random) {
     firstVerseId: getRandomInt(1, verseCount, rng),
     verseCount,
     surahName: staticData.surahs[surahId - 1].name,
-    author: pickRandom(staticData.authors, rng),
+    author: pickRandom(editions, rng),
   };
 }
 

@@ -14,8 +14,6 @@ const TELEGRAM_CHANNEL = "@kurandanmesaj";
 
 const WEBHOOK_URL = "https://kurandan.vercel.app/api/tupdate";
 
-const ACIK_KURAN_BASE_URL = "https://api.acikkuran.com";
-
 const BOT_COMMANDS = [
   { command: "pasaj", description: "Rastgele pasaj getirir" },
 ];
@@ -43,7 +41,6 @@ function readConfig(env = process.env) {
 }
 
 module.exports = {
-  ACIK_KURAN_BASE_URL,
   BOT_COMMANDS,
   CHAR_LIMIT,
   TELEGRAM_CHANNEL,

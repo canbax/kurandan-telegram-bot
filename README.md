@@ -14,10 +14,11 @@ Rastgele bir Kur'an mealinden, rastgele bir kesit paylaşır.
   </p>
 
   <p>
-    <a target="_blank" href="https://github.com/ziegfiroyt/acikkuran-api" class="link-info">Açık Kuran API</a> kullanır.
-    <a target="_blank" href="https://www.postman.com/canbax/workspace/ak-kuran/overview"
-      class="link-info">Postman'de</a> Açık Kuran API
-    incelenebilir.
+    Mealler depoda gömülü olarak gelir; çalışırken hiçbir dış API'ye bağlı değildir.
+    27 Türkçe meal
+    <a target="_blank" href="https://github.com/fawazahmed0/quran-api" class="link-info">fawazahmed0/quran-api</a>
+    deposundan alınmıştır. Kaynakların tam listesi için
+    <a target="_blank" href="data/quran/ATTRIBUTION.md" class="link-info">data/quran/ATTRIBUTION.md</a>.
   </p>
   <p>
     Her gün Türkiye saati ile 19'da bir private <a target="_blank" href="https://gitlab.com/canbax/daily-webhooker"
@@ -35,6 +36,13 @@ npm run test:watch
 npm start         # http://localhost:3000
 ```
 
+Meal verisi `data/quran/` altında depoda gömülü gelir, yani normal geliştirmede
+bir şey indirmeye gerek yoktur. Veriyi kaynağından yeniden üretmek için:
+
+```bash
+npm run build:data   # data/quran/*.qdb ve src/editions.js dosyalarını yeniden yazar
+```
+
 Gerekli ortam değişkenleri: `TELEGRAM_BOT_TOKEN` (zorunlu),
 `TWITTER_CONSUMER_KEY`, `TWITTER_CONSUMER_SECRET`, `TWITTER_OAUTH_TOKEN`,
 `TWITTER_TOKEN_SECRET`, `PORT` (varsayılan 3000).
@@ -49,11 +57,23 @@ Gerekli ortam değişkenleri: `TELEGRAM_BOT_TOKEN` (zorunlu),
 | `src/app.js` | Express uygulaması ve HTTP uçları |
 | `src/bot.js` | Telegram komutlarının işlenmesi (`/pasaj`, `/start`) |
 | `src/passage.js` | Rastgele pasajın seçilmesi ve karakter sınırına sığdırılması |
-| `src/acikkuran.js` | Açık Kuran API istemcisi |
+| `src/quran.js` | Gömülü meallerden ayet okuyan istemci (tembel, önbellekli) |
+| `src/qdb.js` | `.qdb` dosya biçimi (paketleme ve çözme) |
 | `src/telegram.js` | Telegram Bot API istemcisi |
 | `src/twitter.js` | Twitter v2 istemcisi (OAuth 1.0a) |
 | `src/random.js` | Rastgelelik (testlerde sabitlenebilir) |
-| `src/data.js` | Sure/ayet/meal statik verisi |
+| `src/data.js` | Sure adları ve ayet sayıları |
+| `src/editions.js` | Meal listesi (üretilmiştir, elle düzenlenmez) |
+| `scripts/build-quran-data.js` | Mealleri indirip `data/quran/*.qdb` üretir |
+| `data/quran/*.qdb` | 27 meal, toplam ~10 MB |
 
 Her modül bağımlılıklarını dışarıdan alır (`fetchVerse`, `rng`, HTTP
 fonksiyonları), bu yüzden testler ağ erişimi olmadan çalışır.
+
+### Meal verisi nasıl saklanır
+
+Her meal tek bir `.qdb` dosyasıdır: 920 baytlık bir indeks, ardından her sure
+için ayrı ayrı sıkıştırılmış 114 blok. Bir ayet okumak, dosyanın tamamını
+çözmek yerine tek bir `seek` ve ~3 KB'lık bir açma işlemine mal olur; okunan
+sure küçük bir LRU önbellekte tutulduğu için aynı pasajın kalan ayetleri
+diske hiç dönmez. Ham metne göre 27 MB yerine ~10 MB yer kaplar.

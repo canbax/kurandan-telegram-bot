@@ -5,6 +5,7 @@
   "main": "api/index.js",
   "scripts": {
     "start": "node api/index.js",
+    "build:data": "node scripts/build-quran-data.js",
     "test": "node --test test/*.test.js",
     "test:watch": "node --test --watch test/*.test.js"
   },
