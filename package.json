@@ -4,7 +4,9 @@
   "description": "Kur'an'dan kısımlar getiren telegram botu",
   "main": "api/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node api/index.js",
+    "test": "node --test test/*.test.js",
+    "test:watch": "node --test --watch test/*.test.js"
   },
   "keywords": [
     "Kuran",
@@ -14,11 +16,12 @@
   ],
   "author": "Yusuf Canbaz",
   "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
-    "body-parser": "^1.19.0",
     "express": "^4.17.1",
-    "express-session": "^1.17.2",
     "got": "^11.8.3",
-    "login-with-twitter": "^1.2.4"
+    "oauth-1.0a": "^2.2.6"
   }
 }

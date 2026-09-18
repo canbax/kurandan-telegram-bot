@@ -25,3 +25,35 @@ Rastgele bir Kur'an mealinden, rastgele bir kesit paylaşır.
     (burası oluyor) HTTP
     isteği gönderir. Bu istek gelince twitter ve telegramda pasaj paylaşılır.
   </p>
+
+## Geliştirme
+
+```bash
+npm install
+npm test          # node:test ile birim + HTTP testleri
+npm run test:watch
+npm start         # http://localhost:3000
+```
+
+Gerekli ortam değişkenleri: `TELEGRAM_BOT_TOKEN` (zorunlu),
+`TWITTER_CONSUMER_KEY`, `TWITTER_CONSUMER_SECRET`, `TWITTER_OAUTH_TOKEN`,
+`TWITTER_TOKEN_SECRET`, `PORT` (varsayılan 3000).
+
+### Dosya yapısı
+
+| Dosya | Sorumluluk |
+| --- | --- |
+| `api/index.js` | Vercel giriş noktası; sadece `src`'i ayağa kaldırır |
+| `src/index.js` | Composition root: gerçek istemcileri kurar ve birbirine bağlar |
+| `src/config.js` | Sabitler ve ortam değişkenlerinin okunması |
+| `src/app.js` | Express uygulaması ve HTTP uçları |
+| `src/bot.js` | Telegram komutlarının işlenmesi (`/pasaj`, `/start`) |
+| `src/passage.js` | Rastgele pasajın seçilmesi ve karakter sınırına sığdırılması |
+| `src/acikkuran.js` | Açık Kuran API istemcisi |
+| `src/telegram.js` | Telegram Bot API istemcisi |
+| `src/twitter.js` | Twitter v2 istemcisi (OAuth 1.0a) |
+| `src/random.js` | Rastgelelik (testlerde sabitlenebilir) |
+| `src/data.js` | Sure/ayet/meal statik verisi |
+
+Her modül bağımlılıklarını dışarıdan alır (`fetchVerse`, `rng`, HTTP
+fonksiyonları), bu yüzden testler ağ erişimi olmadan çalışır.
