@@ -77,3 +77,8 @@ için ayrı ayrı sıkıştırılmış 114 blok. Bir ayet okumak, dosyanın tama
 çözmek yerine tek bir `seek` ve ~3 KB'lık bir açma işlemine mal olur; okunan
 sure küçük bir LRU önbellekte tutulduğu için aynı pasajın kalan ayetleri
 diske hiç dönmez. Ham metne göre 27 MB yerine ~10 MB yer kaplar.
+
+### QDB dosyası nasıl okunur?
+node scripts/dump-qdb.js data/quran/tur-diyanetisleri.qdb          # verse counts per surah
+node scripts/dump-qdb.js data/quran/tur-diyanetisleri.qdb 1        # all of surah 1
+node scripts/dump-qdb.js data/quran/tur-diyanetisleri.qdb 2 255    # Ayetel Kürsi
