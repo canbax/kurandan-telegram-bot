@@ -4,8 +4,12 @@
  * That is what makes the other modules testable without any env setup.
  */
 
-/** Telegram refuses longer messages; tweets are capped at 280 + link budget. */
-const CHAR_LIMIT = 375;
+/**
+ * How long a passage may get before `buildPassage` truncates it. This is an
+ * editorial choice about readable post length, not a platform limit --
+ * Telegram itself accepts messages up to 4096 characters.
+ */
+const CHAR_LIMIT = 1024;
 
 const WELCOME_MESSAGE =
   "Merhaba. Ben Kur'an'dan pasajlar getiren bir botum :) /pasaj komutu ile rastgele pasaj getirebilirsiniz.";
