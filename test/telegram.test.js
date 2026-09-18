@@ -1,6 +1,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const { createTelegramClient } = require("../src/telegram");
+const { WEBHOOK_URL } = require("../src/config");
 
 function fakeClient(getResponses = {}) {
   const posts = [];
@@ -50,13 +51,25 @@ test("ensureWebhook registers the webhook when none is set", async () => {
   );
 });
 
-test("ensureWebhook leaves an existing webhook alone", async () => {
+test("ensureWebhook leaves the webhook alone when it already matches", async () => {
   const { telegram, gets } = fakeClient({
-    getWebhookInfo: { result: { url: "https://already.test/hook" } },
+    getWebhookInfo: { result: { url: WEBHOOK_URL } },
   });
 
   assert.equal(await telegram.ensureWebhook(), false);
   assert.ok(!gets.some((url) => url.includes("setWebhook")));
+});
+
+test("ensureWebhook replaces a webhook pointing somewhere else", async () => {
+  const { telegram, gets } = fakeClient({
+    getWebhookInfo: { result: { url: "https://stale.test/hook" } },
+  });
+
+  assert.equal(await telegram.ensureWebhook("https://bot.test/hook"), true);
+  assert.ok(
+    gets.some((url) => url.endsWith("setWebhook?url=https://bot.test/hook")),
+    `setWebhook was not called: ${gets.join(", ")}`
+  );
 });
 
 test("setCommands publishes the /pasaj command by default", async () => {

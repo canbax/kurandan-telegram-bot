@@ -31,14 +31,26 @@ function createTelegramClient({
     return getJson(baseUrl + "getMe");
   }
 
-  async function hasWebhook() {
+  /** @returns {Promise<string>} the registered url, "" when there is none. */
+  async function getWebhookUrl() {
     const payload = await getJson(baseUrl + "getWebhookInfo");
-    return Boolean(payload.result.url);
+    return (payload.result && payload.result.url) || "";
   }
 
-  /** Registers the webhook unless one is already registered. */
+  async function hasWebhook() {
+    return Boolean(await getWebhookUrl());
+  }
+
+  /**
+   * Points the webhook at `url`. A webhook registered for some *other* url --
+   * a previous deploy, or one set by hand -- is replaced, because "some
+   * webhook exists" is not the same as "our webhook exists"; only skipping the
+   * call when the urls already match keeps this a no-op in the common case.
+   *
+   * @returns {Promise<boolean>} whether the webhook had to be (re)registered.
+   */
   async function ensureWebhook(url = WEBHOOK_URL) {
-    if (await hasWebhook()) {
+    if ((await getWebhookUrl()) === url) {
       return false;
     }
     await getJson(baseUrl + "setWebhook?url=" + url);
@@ -49,7 +61,14 @@ function createTelegramClient({
     return postJson(baseUrl + "setMyCommands", { commands });
   }
 
-  return { ensureWebhook, getBotInfo, hasWebhook, sendMessage, setCommands };
+  return {
+    ensureWebhook,
+    getBotInfo,
+    getWebhookUrl,
+    hasWebhook,
+    sendMessage,
+    setCommands,
+  };
 }
 
 async function defaultGetJson(url) {

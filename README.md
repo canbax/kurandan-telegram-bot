@@ -43,6 +43,19 @@ bir şey indirmeye gerek yoktur. Veriyi kaynağından yeniden üretmek için:
 npm run build:data   # data/quran/*.qdb ve src/editions.js dosyalarını yeniden yazar
 ```
 
+### Telegram kaydı (webhook ve komutlar)
+
+Vercel'deki fonksiyon istek geldikçe çalışır, yani açılışta bir kez webhook
+kaydı yapamaz. Bu yüzden kayıt ayrı bir komutla, elle yapılır:
+
+```bash
+TELEGRAM_BOT_TOKEN=... npm run setup:telegram
+```
+
+Bu komutu her deploy'dan, `WEBHOOK_URL` ya da `BOT_COMMANDS` değişikliğinden ve
+**BotFather üzerinden bota dokunduktan sonra** çalıştırın: BotFather'ın komut
+ekranı ile `setMyCommands` aynı listeyi yazar, en son yazan kazanır.
+
 Gerekli ortam değişkenleri: `TELEGRAM_BOT_TOKEN` (zorunlu),
 `TWITTER_CONSUMER_KEY`, `TWITTER_CONSUMER_SECRET`, `TWITTER_OAUTH_TOKEN`,
 `TWITTER_TOKEN_SECRET`, `PORT` (varsayılan 3000).
@@ -51,7 +64,7 @@ Gerekli ortam değişkenleri: `TELEGRAM_BOT_TOKEN` (zorunlu),
 
 | Dosya | Sorumluluk |
 | --- | --- |
-| `api/index.js` | Vercel giriş noktası; sadece `src`'i ayağa kaldırır |
+| `api/index.js` | Vercel giriş noktası; Express uygulamasını dışa verir |
 | `src/index.js` | Composition root: gerçek istemcileri kurar ve birbirine bağlar |
 | `src/config.js` | Sabitler ve ortam değişkenlerinin okunması |
 | `src/app.js` | Express uygulaması ve HTTP uçları |
@@ -65,6 +78,7 @@ Gerekli ortam değişkenleri: `TELEGRAM_BOT_TOKEN` (zorunlu),
 | `src/data.js` | Sure adları ve ayet sayıları |
 | `src/editions.js` | Meal listesi (üretilmiştir, elle düzenlenmez) |
 | `scripts/build-quran-data.js` | Mealleri indirip `data/quran/*.qdb` üretir |
+| `scripts/setup-telegram.js` | Webhook ve komut listesini Telegram'a kaydeder |
 | `data/quran/*.qdb` | 27 meal, toplam ~10 MB |
 
 Her modül bağımlılıklarını dışarıdan alır (`fetchVerse`, `rng`, HTTP
