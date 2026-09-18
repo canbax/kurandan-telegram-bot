@@ -53,13 +53,55 @@ function createTelegramClient({
 }
 
 async function defaultGetJson(url) {
-  const { body } = await got(url);
-  return JSON.parse(body);
+  try {
+    const { body } = await got(url);
+    return JSON.parse(body);
+  } catch (err) {
+    throw describeApiError(err, url);
+  }
 }
 
 async function defaultPostJson(url, json) {
-  const { body } = await got.post(url, { json });
-  return body;
+  try {
+    const { body } = await got.post(url, { json });
+    return body;
+  } catch (err) {
+    throw describeApiError(err, url, json);
+  }
+}
+
+/**
+ * Telegram explains every rejection in the response body; got only reports the
+ * status code. Without this, a 400 reaches the logs as "Response code 400 (Bad
+ * Request)" and says nothing about what was actually wrong with the request.
+ *
+ * @param {Error & { response?: { body?: unknown } }} err
+ * @param {string} url the API url, whose last segment is the method name
+ * @param {object} [json] the request payload, minus its `text`
+ */
+function describeApiError(err, url, json) {
+  const payload = err.response && err.response.body;
+  if (payload === undefined) {
+    return err;
+  }
+
+  let description = payload;
+  try {
+    const parsed = typeof payload === "string" ? JSON.parse(payload) : payload;
+    description = parsed.description || JSON.stringify(parsed);
+  } catch (parseErr) {
+    // A non-JSON body is still worth logging verbatim.
+  }
+
+  const method = url.split("/").pop();
+  // The passage itself is noise in a log line, but its length is not.
+  const context = json
+    ? ` (chat_id=${json.chat_id}, text length=${(json.text || "").length})`
+    : "";
+
+  const wrapped = new Error(`telegram ${method} failed: ${description}${context}`);
+  wrapped.cause = err;
+  return wrapped;
 }
 
 module.exports = { createTelegramClient };

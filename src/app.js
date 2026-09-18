@@ -47,7 +47,12 @@ function createApp({
         res.json({ ok: true, handled: false, reason: "no text message" });
         return;
       }
-      logger.log("telegram update came with message:", update.text);
+      logger.log(
+        "telegram update came with message:",
+        update.text,
+        "from chat",
+        update.chatId
+      );
       const handled = await bot.handleCommand(update.text, update.chatId);
       res.json({ ok: true, handled });
     } catch (err) {
